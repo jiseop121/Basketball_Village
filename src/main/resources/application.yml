@@ -1,0 +1,40 @@
+spring:
+  jwt:
+    secret: 'ThisIsTestSecretCode'
+  application:
+    name: 'basketballvillage'
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/basketballvillage
+    username: root
+    password: 1234
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    properties:
+      hibernate:
+        hibernate:
+          "[format_sql]": true            #SQL 보기 좋게 출력
+          "[user_sql_comments]": true     #SQL 생성시 주석 포함
+          "[highlight_sql]": true         #SQL 색깔
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+    hibernate:
+      ddl-auto: create-drop
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    groups-order: DESC
+    operationsSorter: method
+    disable-swagger-default-url: true
+    display-request-duration: true
+    defaultModelsExpandDepth: -1
+  api-docs:
+    path: /api
+    show-actuator: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  paths-to-match:
+    - /**
