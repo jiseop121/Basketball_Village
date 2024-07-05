@@ -11,6 +11,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+
 @Slf4j
 @RestControllerAdvice
 @RequiredArgsConstructor
@@ -30,17 +32,6 @@ public class GlobalExceptionHandler {
         final ResValidErrorDto response = ResValidErrorDto.of(ErrorCode.INVALID_INPUT_VALUE, e.getBindingResult());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
-
-//    /**
-//     * @ModelAttribut 으로 binding error 발생시 BindException 발생한다.
-//     * ref https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html#mvc-ann-modelattrib-method-args
-//     */
-//    @ExceptionHandler(BindException.class)
-//    protected ResponseEntity<ResValidErrorDto> handleBindException(BindException e) {
-//        log.error("handleBindException", e);
-//        final ResValidErrorDto response = ResValidErrorDto.of(ErrorCode.INVALID_INPUT_VALUE, e.getBindingResult());
-//        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-//    }
 
     /**
      * enum type 일치하지 않아 binding 못할 경우 발생
@@ -76,24 +67,34 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ResValidErrorDto> handleAccessDeniedException(AccessDeniedException e) {
         log.error("handleAccessDeniedException", e);
         final ResValidErrorDto response = ResValidErrorDto.of(ErrorCode.HANDLE_ACCESS_DENIED);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.HANDLE_ACCESS_DENIED.getStatus()));
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ErrorCode.HANDLE_ACCESS_DENIED.getHttpStatus().value()));
     }
 
     @ApiResponse(
-        responseCode = "???",description = "서버 정상적 에러 처리"
+        responseCode = "4XX",description = "서버 정상적 에러 처리"
     )
     @ExceptionHandler(BusinessException.class)
     protected ResponseEntity<ResErrorDto> handleBusinessException(final BusinessException e) {
         log.error("handleBusinessException", e);
         final ErrorCode errorCode = e.getErrorCode();
         final ResErrorDto response = new ResErrorDto(e.getErrorCode());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getStatus()));
+        return new ResponseEntity<>(response, HttpStatus.valueOf(errorCode.getHttpStatus().value()));
     }
 
-//    @ExceptionHandler(Exception.class)
-//    protected ResponseEntity<ResValidErrorDto> handleException(Exception e) {
-//        log.error("handleEntityNotFoundException", e);
-//        final ResValidErrorDto response = ResValidErrorDto.of(ErrorCode.INTERNAL_SERVER_ERROR);
-//        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
+    @ExceptionHandler(NoResourceFoundException.class)
+    protected ResponseEntity<ResErrorDto> handleNoResourceFoundException(NoResourceFoundException e){
+        log.error("handleNoResourceFoundException", e);
+        final ResValidErrorDto response = ResValidErrorDto.of(ErrorCode.URL_NOT_FOUND);
+        ResErrorDto resErrorDto = new ResErrorDto(ErrorCode.URL_NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resErrorDto);
+    }
+
+    @ExceptionHandler(Exception.class)
+    protected ResponseEntity<ResValidErrorDto> handleException(Exception e) {
+        log.error("handleEntityNotFoundException", e);
+        final ResValidErrorDto response = ResValidErrorDto.of(ErrorCode.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
 }

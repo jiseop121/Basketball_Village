@@ -21,8 +21,9 @@ public class DummyData {
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void initDatabase(){
-        User user = new User("adminHong", "admin@naver.com", "admin12", Role.ADMIN,
-            new BCryptPasswordEncoder());
-        userRepository.save(user);
+        User adminUser = new User("adminHong", "admin@naver.com", "admin12", Role.ADMIN, new BCryptPasswordEncoder());
+        User userUser = new User("userHong","testuser@naver.com","1234",Role.USER, new BCryptPasswordEncoder());
+        userRepository.save(adminUser);
+        userRepository.save(userUser);
     }
 }
