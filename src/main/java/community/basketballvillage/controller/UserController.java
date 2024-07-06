@@ -41,6 +41,7 @@ public class UserController {
         log.info("join complete");
         return ResponseEntity.status(HttpStatus.OK).body(joined);
     }
+
     @Operation(summary = "회원 정보 수정", description = "회원 정보 수정")
     @ApiResponse(responseCode = "200", description = "회원 정보 정상 수정되었습니다.")
     @PostMapping("/my")

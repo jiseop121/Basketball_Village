@@ -9,7 +9,5 @@ import community.basketballvillage.domain.User;
 
 @Repository
 public interface PostLikeRepository extends JpaRepository<PostLike,Long> {
-
-
     Optional<PostLike> findByUserAndPost(User user, Post post);
 }
