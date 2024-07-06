@@ -12,11 +12,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginDto {
-    @NotEmpty
-    @Email
+
+    @NotEmpty(message = "이메일을 입력해주세요.")
+    @Email(message = "유효한 이메일 형식을 입력해주세요.")
     private String email;
 
-    @NotEmpty
-    @NotBlank
+    @NotEmpty(message = "비밀번호를 입력해주세요.")
+    @NotBlank(message = "비밀번호는 공백일 수 없습니다.")
     private String password;
 }
