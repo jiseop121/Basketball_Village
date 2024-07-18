@@ -4,13 +4,13 @@ package community.basketballvillage.config.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import community.basketballvillage.config.auth.LoginUser;
+import community.basketballvillage.domain.User;
+import community.basketballvillage.global.constant.Role;
 import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import community.basketballvillage.config.auth.LoginUser;
-import community.basketballvillage.domain.User;
-import community.basketballvillage.global.constant.Role;
 
 @Slf4j
 @Component

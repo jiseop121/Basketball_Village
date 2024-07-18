@@ -64,7 +64,7 @@ public class UserService {
     }
 
     public ResUserInfoDto getUserInfo(JoinDto joinDto,Long userId){
-        User user = userRepository.findById(userId).orElseThrow(
+        userRepository.findById(userId).orElseThrow(
             () -> new BusinessException(ErrorCode.USER_NOT_FOUND)
         );
         return new ResUserInfoDto(joinDto);

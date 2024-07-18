@@ -92,7 +92,7 @@ class PostControllerTest {
     @BeforeEach
     void initData(){
         userRepository.save(TEST_USER);
-        User user = userRepository.findByEmail(TEST_EMAIL).get();
+        User user = userRepository.findById(1L).get();
         postRepository.save(new Post(user,TEST_TITLE,TEST_CONTENT));
         em.clear();
 
@@ -194,7 +194,8 @@ class PostControllerTest {
     void 정상_addLikePost_like추가후_삭제() throws Exception {
         //given
         Post post1 = postRepository.findAll().get(0);
-        postService.likePost(TEST_EMAIL,post1.getId());
+        User user = userRepository.findByEmail(TEST_EMAIL).get();
+        postService.likePost(user.getId(),post1.getId());
 
         //when
         ResultActions performPost1 = mockMvc.perform(
@@ -204,7 +205,7 @@ class PostControllerTest {
         performPost1.andExpect(status().isOk());
 
         //postlike 확인
-        User user = userRepository.findByEmail(TEST_EMAIL).get();
+
         Post post = postRepository.findAll().get(0);
 
         assertThat(postLikeRepository.findByUserAndPost(user,post).isPresent()).isFalse();
@@ -235,7 +236,8 @@ class PostControllerTest {
     void 정상_addBookmarkPost_bookmark추가후_삭제() throws Exception {
         //given
         Post post = postRepository.findAll().get(0);
-        postService.bookmarkPost(TEST_EMAIL,post.getId());
+        User user = userRepository.findByEmail(TEST_EMAIL).get();
+        postService.bookmarkPost(user.getId(),post.getId());
 
         //when
         ResultActions performPost1 = mockMvc.perform(
@@ -244,7 +246,7 @@ class PostControllerTest {
         performPost1.andExpect(status().isOk());
 
         //postlike 확인
-        User user = userRepository.findByEmail(TEST_EMAIL).get();
+
         post = postRepository.findAll().get(0);
 
         assertThat(bookmarkRepository.findByUserAndPost(user,post).isPresent()).isFalse();

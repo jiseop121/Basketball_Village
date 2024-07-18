@@ -1,8 +1,10 @@
 package community.basketballvillage.controller;
 
+import community.basketballvillage.dto.response.ResUserDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,8 +28,13 @@ public class AdminController {
     @Operation(summary = "모든 유저 리스트", description = "관리자가 볼 수 있는 유저 리스트")
     @ApiResponse(responseCode = "200", description = "모든 유저 리스트를 정상 응답하였습니다.")
     @GetMapping("/user")
-    public ResponseEntity<List<User>> allUser(){
+    public ResponseEntity<List<ResUserDto>> allUser(){
         List<User> all = userRepository.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(all);
+        List<ResUserDto> resUserDtos = new ArrayList<>();
+        all.forEach(user -> {
+            resUserDtos.add(new ResUserDto(user.getName(),user.getEmail(),user.getRole()));
+            }
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(resUserDtos);
     }
 }

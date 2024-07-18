@@ -12,7 +12,7 @@ public class ResErrorDto {
 
     public ResErrorDto(final ErrorCode code) {
         this.message = code.getMessage();
-        this.status = code.getStatus();
+        this.status = code.getHttpStatus().value();
         this.code = code.getCode();
     }
 }

@@ -1,5 +1,7 @@
 package community.basketballvillage.service;
 
+import static community.basketballvillage.dummy.DummyObject.TEST_EMAIL;
+import static community.basketballvillage.dummy.DummyObject.newUserForTest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.any;
@@ -8,6 +10,7 @@ import static org.mockito.BDDMockito.times;
 import static org.mockito.BDDMockito.verify;
 import static org.mockito.Mockito.doThrow;
 
+import community.basketballvillage.global.exception.ErrorCode;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -35,9 +38,6 @@ class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
-
-    @Spy
-    private UserValidation userValidation;
 
     @Spy
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -80,12 +80,7 @@ class UserServiceTest {
     @Test
     void 비정상_회원가입_중복이메일회원() {
 
-        User firstUser = new User(USERNAME,
-            JOIN_EMAIL,
-            PASSWORD,
-            Role.ADMIN,
-            bCryptPasswordEncoder
-        );
+        User firstUser = newUserForTest(TEST_EMAIL);
 
         JoinDto joinDto = new JoinDto(
             USERNAME,
@@ -96,15 +91,13 @@ class UserServiceTest {
 
         doReturn(firstUser).when(userRepository).save(firstUser);
         doReturn(true).when(userRepository).existsByEmail(JOIN_EMAIL);
-        doThrow(BusinessException.class).when(userValidation).checkEmailIsDupl(true);
 
         //when
         userRepository.save(firstUser);
 
         //then
         assertThatThrownBy(() -> userService.join(joinDto))
-            .isInstanceOf(BusinessException.class);
-
-        verify(userValidation,times(1)).checkEmailIsDupl(true);
+            .isInstanceOf(BusinessException.class)
+            .hasMessage(ErrorCode.EMAIL_DUPLICATION.getMessage());
     }
 }

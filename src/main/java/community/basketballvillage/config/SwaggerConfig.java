@@ -16,8 +16,8 @@ import org.springframework.context.annotation.Configuration;
     servers = {
         @Server(url = "/", description = "Default Server URL")
     },
-    info = @Info(title = "webpost API 명세서",
-        description = "TEAM-F 홍지섭",
+    info = @Info(title = "BasketBall_Village API 명세서",
+        description = "홍지섭 개인 프로젝트",
         version = "v1"))
 @Configuration
 @RequiredArgsConstructor

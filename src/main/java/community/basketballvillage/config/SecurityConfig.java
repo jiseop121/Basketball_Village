@@ -1,10 +1,13 @@
 package community.basketballvillage.config;
 
+import community.basketballvillage.global.exception.ErrorCode;
+import community.basketballvillage.global.exception.ResValidErrorDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -44,14 +47,14 @@ public class SecurityConfig {
     // JWT 서버를 만들 예정이므로 Session 사용안함.
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        log.debug("디버그 : filterChain 빈 등록됨");
+        log.debug("filterChain 빈 등록 완료");
 
         // iframe 허용안함.
         http.headers(headers -> headers
             .frameOptions((frameOptions -> frameOptions
                 .sameOrigin())));
 
-        // enable이면 post맨 작동안함 (메타코딩 유튜브에 시큐리티 강의)
+        // enable이면 post맨 작동안함
         http
             .csrf((auth)-> auth.disable());
 
@@ -68,23 +71,30 @@ public class SecurityConfig {
 
         //security6로 들어오면서 filter들을 세팅한 configurer 등록이 어렵게 되었다(apply가 사장됨)
         http
-            .addFilterBefore(new JwtAuthenticationFilter(authenticationManager(authenticationConfiguration),
-                    jwtProcess),
+            .addFilterBefore(new JwtAuthenticationFilter(authenticationManager(authenticationConfiguration), jwtProcess),
                 UsernamePasswordAuthenticationFilter.class);
 
         http
-            .addFilter(new JwtAuthorizationFilter(authenticationManager(authenticationConfiguration),
-                jwtProcess));
+            .addFilter(new JwtAuthorizationFilter(authenticationManager(authenticationConfiguration), jwtProcess));
+
+        //exception exceptionHandler로 책임 보내기
+//        http
+//            .exceptionHandling(httpSecurityExceptionHandlingConfigurer -> {
+//                httpSecurityExceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthenticationEntryPoint);
+//            });
+
 
         //exception 가로채기
         // 인증 실패
+
         http.exceptionHandling(e-> e.authenticationEntryPoint((request, response, authException) -> {
-            CustomResponseUtil.fail(response, "로그인을 진행해 주세요", HttpStatus.UNAUTHORIZED);
+            log.info("exceptionHandling authenticationEntryPoint");
+            CustomResponseUtil.fail(response, authException, HttpStatus.UNAUTHORIZED);
         }));
 
         http.exceptionHandling(e-> e.accessDeniedHandler((request, response, accessDeniedException) -> {
-//            throw new InternalAuthenticationServiceException("1");
-            CustomResponseUtil.fail(response, "권한이 없습니다", HttpStatus.FORBIDDEN);
+            log.info("exceptionHandling accessDeniedHandler");
+            CustomResponseUtil.fail(response, accessDeniedException, HttpStatus.FORBIDDEN);
         }));
 
         http
@@ -110,7 +120,7 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource configurationSource() {
-        log.debug("디버그 : configurationSource cors 설정이 SecurityFilterChain에 등록됨");
+        log.debug("configurationSource cors 설정이 SecurityFilterChain에 등록됨");
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*"); // GET, POST, PUT, DELETE (Javascript 요청 허용)
@@ -121,16 +131,4 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration); //모든주소에 CorsConfiguration 세팅
         return source;
     }
-
-//    //JWT 필터 등록
-//    public class CustomSecurityFilterManager extends AbstractHttpConfigurer<CustomSecurityFilterManager,HttpSecurity>{
-//
-//        @Override
-//        public void configure(HttpSecurity builder) throws Exception {
-//            AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
-//            builder.addFilter(new JwtAuthenticationFilter(authenticationManager));
-////            builder.addFilter(new JwtAuthorizationFilter(authenticationManager));
-//            super.configure(builder);
-//        }
-//    }
 }

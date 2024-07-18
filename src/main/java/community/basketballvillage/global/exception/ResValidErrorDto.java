@@ -1,5 +1,6 @@
 package community.basketballvillage.global.exception;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @Getter
 @NoArgsConstructor
+@Schema(description = "Validation Error Response")
 public class ResValidErrorDto {
 
     private String message;
@@ -21,14 +23,21 @@ public class ResValidErrorDto {
 
     private ResValidErrorDto(final ErrorCode code, final List<CustomFieldError> errors) {
         this.message = code.getMessage();
-        this.status = code.getStatus();
+        this.status = code.getHttpStatus().value();
         this.errors = errors;
         this.code = code.getCode();
     }
 
     public ResValidErrorDto(final ErrorCode code) {
         this.message = code.getMessage();
-        this.status = code.getStatus();
+        this.status = code.getHttpStatus().value();
+        this.code = code.getCode();
+        this.errors = new ArrayList<>();
+    }
+
+    public ResValidErrorDto(final ErrorCode code,final String message) {
+        this.message = message;
+        this.status = code.getHttpStatus().value();
         this.code = code.getCode();
         this.errors = new ArrayList<>();
     }
@@ -44,6 +53,10 @@ public class ResValidErrorDto {
 
     public static ResValidErrorDto of(final ErrorCode code, final List<CustomFieldError> errors) {
         return new ResValidErrorDto(code, errors);
+    }
+
+    public static ResValidErrorDto of(final ErrorCode code,final String message){
+        return new ResValidErrorDto(code,message);
     }
 
     public static ResValidErrorDto of(MethodArgumentTypeMismatchException e) {
