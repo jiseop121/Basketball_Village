@@ -2,6 +2,7 @@ package community.basketballvillage.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -22,12 +23,13 @@ import community.basketballvillage.dto.request.JoinDto;
 import community.basketballvillage.dto.response.ResUserDto;
 import community.basketballvillage.global.constant.Role;
 import community.basketballvillage.service.UserService;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
 
     private static final String JOIN_EMAIL = "admin123@naver.com";
-    private static final String PASSWORD = "admin123";
+    private static final String PASSWORD = "admin123!";
     private static final String USERNAME = "adminHong";
 
     @InjectMocks
@@ -75,6 +77,37 @@ class UserControllerTest {
             .andExpect(jsonPath("email", resUserDto.getEmail()).value(JOIN_EMAIL))
             .andExpect(jsonPath("name", resUserDto.getName()).value(USERNAME))
             .andExpect(jsonPath("role", resUserDto.getRole()).value(Role.ADMIN.name()));
+    }
+
+    @Test
+    void 비정상_회원가입_이메일형식_오류() throws Exception {
+
+        //request
+        JoinDto joinDto = new JoinDto(
+            USERNAME,
+            "aaa",
+            PASSWORD,
+            Role.ADMIN
+        );
+
+//        //response
+//        ResUserDto resUserDto = new ResUserDto(
+//            USERNAME,
+//            "aaa",
+//            Role.ADMIN
+//        );
+//
+//        doThrow(MethodArgumentNotValidException.class).when(userService).join(joinDto);
+
+        //when
+        ResultActions performPostJoin = mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/join")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new Gson().toJson(joinDto))
+        );
+
+        //then
+        performPostJoin.andExpect(status().is4xxClientError());
     }
 
     private static MockHttpServletRequestBuilder getMockHttpServletRequestBuilder() {

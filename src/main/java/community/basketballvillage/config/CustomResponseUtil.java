@@ -46,7 +46,7 @@ public class CustomResponseUtil {
             response.setStatus(httpStatus.value());
             response.getWriter().println(responseBody);
         } catch (Exception e) { //사실 파싱 에러가 날 수 없는 구조다.
-            log.error("server pasring error");
+            log.error("server parsing error");
         }
     }
 
