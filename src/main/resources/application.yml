@@ -1,0 +1,5 @@
+# application-dev 를 찾아서 설정 진행
+spring:
+  profiles:
+    active:
+      - prod
