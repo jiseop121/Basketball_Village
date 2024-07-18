@@ -14,7 +14,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MariaDBDialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
