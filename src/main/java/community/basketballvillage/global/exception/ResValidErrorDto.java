@@ -1,5 +1,6 @@
 package community.basketballvillage.global.exception;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @Getter
 @NoArgsConstructor
+@Schema(description = "Validation Error Response")
 public class ResValidErrorDto {
 
     private String message;

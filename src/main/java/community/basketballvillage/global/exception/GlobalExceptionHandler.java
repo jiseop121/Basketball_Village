@@ -1,11 +1,14 @@
 package community.basketballvillage.global.exception;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.nio.file.AccessDeniedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,7 +26,9 @@ public class GlobalExceptionHandler {
      * 주로 @RequestBody, @RequestPart 어노테이션에서 발생
      */
     @ApiResponse(
-        responseCode = "400",description = "body 및 part 데이터 형식 오류 발생"
+        responseCode = "400",
+        description = "Validation에서 발생되는 DTO에러",
+        content = @Content(schema = @Schema(implementation = ResValidErrorDto.class))
     )
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<ResValidErrorDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
@@ -38,7 +43,9 @@ public class GlobalExceptionHandler {
      * 주로 @RequestParam enum으로 binding 못했을 경우 발생
      */
     @ApiResponse(
-        responseCode = "400",description = "파라미터 데이터 형식 오류 발생"
+        responseCode = "400",
+        description = "파라미터 데이터 형식 오류 발생",
+        content = @Content(schema = @Schema(implementation = ResValidErrorDto.class))
     )
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     protected ResponseEntity<ResValidErrorDto> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
@@ -61,7 +68,7 @@ public class GlobalExceptionHandler {
      * Authentication 객체가 필요한 권한을 보유하지 않은 경우 발생합
      */
     @ApiResponse(
-        responseCode = "400",description = "권한 없음"
+        responseCode = "403",description = "권한 없음"
     )
     @ExceptionHandler(AccessDeniedException.class)
     protected ResponseEntity<ResValidErrorDto> handleAccessDeniedException(AccessDeniedException e) {
