@@ -27,8 +27,10 @@ import community.basketballvillage.global.constant.Role;
 import community.basketballvillage.global.exception.BusinessException;
 import community.basketballvillage.repository.UserRepository;
 import community.basketballvillage.validation.UserValidation;
+import org.springframework.test.context.ActiveProfiles;
 
 @Slf4j
+@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 

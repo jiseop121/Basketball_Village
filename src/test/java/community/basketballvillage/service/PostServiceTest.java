@@ -9,7 +9,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.never;
 import static org.mockito.BDDMockito.times;
 import static org.mockito.BDDMockito.verify;
-import static org.mockito.BDDMockito.when;
 
 import community.basketballvillage.domain.Post;
 import community.basketballvillage.domain.PostLike;
@@ -22,7 +21,6 @@ import community.basketballvillage.repository.PostLikeRepository;
 import community.basketballvillage.repository.PostRepository;
 import community.basketballvillage.repository.ReplyRepository;
 import community.basketballvillage.repository.UserRepository;
-import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -33,8 +31,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 @Slf4j
+@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {
 
@@ -64,7 +64,7 @@ class PostServiceTest {
     private ReplyRepository replyRepository;
 
     @BeforeEach
-    void reset(){
+    void reset() {
         testPost = new Post(
             TEST_USER,
             TEST_TITLE,
@@ -104,16 +104,16 @@ class PostServiceTest {
     }
 
     @Test
-    void 정상_detailPost_viewCnt_증가(){
+    void 정상_detailPost_viewCnt_증가() {
         //given
         given(postRepository.findById(1L)).willReturn(Optional.ofNullable(testPost));
         given(replyRepository.findAllByPost(testPost)).willReturn(null);
         //when
         int repeatCnt = 5;
-        for(int i=0;i<repeatCnt;i++){
+        for (int i = 0; i < repeatCnt; i++) {
             ResPostDto resPostDto = postService.detailPost(TEST_POST_ID);
             //then
-            assertThat(resPostDto.getViewCnt()).isEqualTo(i+1);
+            assertThat(resPostDto.getViewCnt()).isEqualTo(i + 1);
         }
     }
 
@@ -123,7 +123,8 @@ class PostServiceTest {
         String updateTitle = "test title update";
         String updateContent = "test content update";
         given(userRepository.findById(TEST_USER_ID)).willReturn(Optional.of(TEST_USER));
-        given(postRepository.findByIdAndUser(TEST_POST_ID,TEST_USER)).willReturn(Optional.of(testPost));
+        given(postRepository.findByIdAndUser(TEST_POST_ID, TEST_USER)).willReturn(
+            Optional.of(testPost));
 
         //when
         ResPostDto resPostDto = postService.updatePost(TEST_USER_ID, TEST_POST_ID,
@@ -140,7 +141,8 @@ class PostServiceTest {
         //given
         String updateTitle = "test title update";
         given(userRepository.findById(TEST_USER_ID)).willReturn(Optional.of(TEST_USER));
-        given(postRepository.findByIdAndUser(TEST_POST_ID,TEST_USER)).willReturn(Optional.of(testPost));
+        given(postRepository.findByIdAndUser(TEST_POST_ID, TEST_USER)).willReturn(
+            Optional.of(testPost));
         given(replyRepository.findAllByPost(testPost)).willReturn(null);
 
         //when
@@ -150,7 +152,7 @@ class PostServiceTest {
         //then
         assertThat(resPostDto.getTitle()).isEqualTo(updateTitle);
         assertThat(resPostDto.getContent()).isEqualTo(testPost.getContent());
-        verify(postRepository,times(1)).findByIdAndUser(1L, TEST_USER);
+        verify(postRepository, times(1)).findByIdAndUser(1L, TEST_USER);
     }
 
     @Test
@@ -158,7 +160,8 @@ class PostServiceTest {
         //given
         String updateContent = "test content update";
         given(userRepository.findById(TEST_USER_ID)).willReturn(Optional.of(TEST_USER));
-        given(postRepository.findByIdAndUser(TEST_POST_ID,TEST_USER)).willReturn(Optional.of(testPost));
+        given(postRepository.findByIdAndUser(TEST_POST_ID, TEST_USER)).willReturn(
+            Optional.of(testPost));
         given(replyRepository.findAllByPost(testPost)).willReturn(null);
 
         //when
@@ -168,83 +171,84 @@ class PostServiceTest {
         //then
         assertThat(resPostDto.getTitle()).isEqualTo(testPost.getTitle());
         assertThat(resPostDto.getContent()).isEqualTo(updateContent);
-        verify(postRepository,times(1)).findByIdAndUser(1L, TEST_USER);
+        verify(postRepository, times(1)).findByIdAndUser(1L, TEST_USER);
     }
 
     @Test
-    void 정상_likePost_좋아요추가(){
+    void 정상_likePost_좋아요추가() {
         PostLike postLike = getPostLike();
         //given
         given(userRepository.findById(TEST_USER_ID)).willReturn(Optional.of(TEST_USER));
         given(postRepository.findById(TEST_POST_ID)).willReturn(Optional.of(testPost));
-        given(postLikeRepository.findByUserAndPost(TEST_USER,testPost)).willReturn(Optional.ofNullable(null));
+        given(postLikeRepository.findByUserAndPost(TEST_USER, testPost)).willReturn(
+            Optional.ofNullable(null));
         given(postLikeRepository.save(any(PostLike.class))).willReturn(postLike);
 
         //when
         assertThat(testPost.getLikeCnt()).isEqualTo(0);
-        postService.likePost(TEST_USER_ID,TEST_POST_ID);
+        postService.likePost(TEST_USER_ID, TEST_POST_ID);
 
         //then
         assertThat(testPost.getLikeCnt()).isEqualTo(1);
         verify(postLikeRepository).save(any(PostLike.class));
-        verify(postLikeRepository,never()).delete(any());
+        verify(postLikeRepository, never()).delete(any());
     }
 
 
-
     @Test
-    void 정상_likePost_좋아요가_있는경우_삭제(){
+    void 정상_likePost_좋아요가_있는경우_삭제() {
         PostLike postLike = getPostLike();
         //given
         testPost.increaseLikeCnt();
         given(userRepository.findById(TEST_USER_ID)).willReturn(Optional.of(TEST_USER));
         given(postRepository.findById(TEST_POST_ID)).willReturn(Optional.of(testPost));
-        given(postLikeRepository.findByUserAndPost(TEST_USER,testPost)).willReturn(Optional.of(postLike));
+        given(postLikeRepository.findByUserAndPost(TEST_USER, testPost)).willReturn(
+            Optional.of(postLike));
 
         doNothing().when(postLikeRepository).delete(postLike);
 
         //when
         assertThat(testPost.getLikeCnt()).isEqualTo(1);
-        postService.likePost(TEST_USER_ID,TEST_POST_ID);
+        postService.likePost(TEST_USER_ID, TEST_POST_ID);
 
         //then
         assertThat(testPost.getLikeCnt()).isEqualTo(0);
         verify(postLikeRepository).delete(postLike);
-        verify(postLikeRepository,never()).save(postLike);
+        verify(postLikeRepository, never()).save(postLike);
     }
 
     @Test
-    void 비정상_없는유저_BusinessException_호출(){
+    void 비정상_없는유저_BusinessException_호출() {
         //given\
         given(userRepository.findById(2L)).willThrow(BusinessException.class);
 
         //when,then
-        assertThatThrownBy(() -> postService.updatePost(2L,1L,new PostDto()))
+        assertThatThrownBy(() -> postService.updatePost(2L, 1L, new PostDto()))
             .isInstanceOf(BusinessException.class);
         assertThatThrownBy(() -> postService.allPostByUser(2L))
             .isInstanceOf(BusinessException.class);
-        assertThatThrownBy(() -> postService.addPost(2L,new PostDto()))
+        assertThatThrownBy(() -> postService.addPost(2L, new PostDto()))
             .isInstanceOf(BusinessException.class);
-        assertThatThrownBy(() -> postService.deletePost(2L,1L))
+        assertThatThrownBy(() -> postService.deletePost(2L, 1L))
             .isInstanceOf(BusinessException.class);
     }
 
     @Test
-    void 비정상_없는post_BusinessException_호출(){
+    void 비정상_없는post_BusinessException_호출() {
 
         //given
         given(userRepository.findById(TEST_USER_ID)).willReturn(Optional.of(TEST_USER));
-        given(postRepository.findByIdAndUser(2L,TEST_USER)).willThrow(BusinessException.class);
+        given(postRepository.findByIdAndUser(2L, TEST_USER)).willThrow(BusinessException.class);
         given(postRepository.findById(2L)).willThrow(BusinessException.class);
 
         //when,then
         assertThatThrownBy(() -> postService.detailPost(2L))
             .isInstanceOf(BusinessException.class);
-        assertThatThrownBy(() -> postService.deletePost(TEST_USER_ID,2L))
+        assertThatThrownBy(() -> postService.deletePost(TEST_USER_ID, 2L))
             .isInstanceOf(BusinessException.class);
-        assertThatThrownBy(() -> postService.updatePost(TEST_USER_ID,2L,new PostDto()))
+        assertThatThrownBy(() -> postService.updatePost(TEST_USER_ID, 2L, new PostDto()))
             .isInstanceOf(BusinessException.class);
-        assertThatThrownBy(() -> postService.likePost(TEST_USER_ID,2L))
+        assertThatThrownBy(() -> postService.likePost(TEST_USER_ID, 2L))
             .isInstanceOf(BusinessException.class);
     }
 

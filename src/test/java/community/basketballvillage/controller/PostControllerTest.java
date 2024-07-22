@@ -35,6 +35,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -52,6 +53,7 @@ import community.basketballvillage.service.PostService;
 @Slf4j
 @Transactional
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK)
 class PostControllerTest {
 
