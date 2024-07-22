@@ -12,9 +12,10 @@ spring:
     password: ${DATASOURCE_PASSWORD}
 
   jpa:
-    database-platform: org.hibernate.dialect.MariaDBDialect
+#    database-platform: org.hibernate.dialect.MariaDBDialect
     hibernate:
       ddl-auto: create
+    open-in-view: false
 springdoc:
   swagger-ui:
     path: /swagger-ui.html

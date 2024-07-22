@@ -11,7 +11,7 @@ spring:
     password: 1234
 
   jpa:
-    database-platform: org.hibernate.dialect.MariaDBDialect
+#    database-platform: org.hibernate.dialect.MariaDBDialect
     properties:
       hibernate:
         hibernate:
@@ -23,6 +23,7 @@ spring:
         use_sql_comments: true
     hibernate:
       ddl-auto: create-drop
+    open-in-view: false
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
