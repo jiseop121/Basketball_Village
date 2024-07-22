@@ -7,7 +7,7 @@ spring:
 
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3308/basketballvillage?characterEncoding=UTF-8&serverTimezone=UTC #내 로컬 mysql
+    url: jdbc:mariadb://basketball-village.cjqcu8cietug.ap-northeast-2.rds.amazonaws.com:3308/basketballvillage #내 로컬 mysql
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
 
