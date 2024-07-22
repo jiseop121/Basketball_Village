@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -25,6 +26,7 @@ import community.basketballvillage.global.constant.Role;
 import community.basketballvillage.service.UserService;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
 
@@ -89,15 +91,6 @@ class UserControllerTest {
             PASSWORD,
             Role.ADMIN
         );
-
-//        //response
-//        ResUserDto resUserDto = new ResUserDto(
-//            USERNAME,
-//            "aaa",
-//            Role.ADMIN
-//        );
-//
-//        doThrow(MethodArgumentNotValidException.class).when(userService).join(joinDto);
 
         //when
         ResultActions performPostJoin = mockMvc.perform(
